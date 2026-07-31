@@ -111,7 +111,7 @@ main{padding:6px 20px 130px;}
 .submitbtn.ready{background:linear-gradient(135deg,var(--cyan),var(--magenta)); color:#04050a;}
 .emojigrid{display:grid; grid-template-columns:repeat(5,1fr); gap:8px; margin-bottom:14px;}
 .emojibtn{border-radius:10px; padding:9px 0; background:rgba(255,255,255,0.04); border:1px solid var(--border); font-size:17px;}
-.swatches{display:flex; gap:8px; margin-bottom:16px;}
+.swatches{display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap;}
 .swatch{width:28px; height:28px; border-radius:50%; border:2px solid transparent;}
 .modalx{position:absolute; left:16px; top:16px; background:none; border:none; color:var(--muted); font-size:18px;}
 .toast{position:fixed; bottom:100px; left:50%; transform:translateX(-50%); background:rgba(15,18,32,0.95);
@@ -188,7 +188,10 @@ main{padding:6px 20px 130px;}
       <input id="sheet-source" class="field-input" placeholder="مثلا حقوق، فروش، هدیه" style="margin-bottom:14px;">
     </div>
     <p class="field-label">تاریخ</p>
-    <input id="sheet-date" type="date" class="field-input" style="direction:ltr; margin-bottom:14px;">
+    <button type="button" id="date-open-btn" onclick="openCalendarModal()" class="field-input" style="text-align:right; display:flex; justify-content:space-between; align-items:center; cursor:pointer;">
+      <span id="date-label">—</span>
+      <span style="color:var(--cyan);">📅</span>
+    </button>
     <p class="field-label">یادداشت (اختیاری)</p>
     <input id="sheet-note" class="field-input" placeholder="توضیح کوتاه" style="margin-bottom:14px;">
     <button id="sheet-submit" class="submitbtn" onclick="submitTransaction()">ثبت</button>
@@ -206,6 +209,16 @@ main{padding:6px 20px 130px;}
     <p class="field-label">رنگ</p>
     <div id="cat-swatches" class="swatches"></div>
     <button id="cat-submit" class="submitbtn" onclick="submitCategory()">افزودن</button>
+  </div>
+</div>
+
+<!-- calendar modal (Persian, current month only, up to today) -->
+<div class="overlay" id="calendar-modal">
+  <div class="modalcard" style="position:relative;">
+    <button class="modalx" onclick="closeCalendarModal()">✕</button>
+    <p class="orb" style="font-size:15px; margin:0 0 4px;" id="calendar-month-title">—</p>
+    <p class="muted" style="font-size:11px; margin:0 0 16px;">فقط تا امروز قابل انتخابه</p>
+    <div id="calendar-grid" style="display:grid; grid-template-columns:repeat(7,1fr); gap:6px;"></div>
   </div>
 </div>
 
@@ -232,7 +245,7 @@ const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 /* ---------- constants ---------- */
 const CYAN='#00e6ff', MAGENTA='#ff2fb0', GREEN='#39ff9c', AMBER='#ffb020', MUTED='#7c8aad';
 const EMOJI_CHOICES=['☕','🛒','🎁','💳','⛽','🚌','❤️','📚','🏋️','🎮','👕','📱','🍕','✈️','🐷','📈','🏠','🎵','🔧','💊'];
-const COLOR_CHOICES=[CYAN,MAGENTA,GREEN,AMBER,'#a78bfa','#ff6b6b'];
+const COLOR_CHOICES=[CYAN,MAGENTA,GREEN,AMBER,'#a78bfa','#ff6b6b','#3b82f6','#f472b6','#14b8a6','#facc15','#818cf8','#84cc16','#fb923c','#22d3ee'];
 
 /* ---------- state ---------- */
 let state={
@@ -686,7 +699,9 @@ function openAddSheet(type, presetCategory){
   document.getElementById('sheet-amount-words').textContent='';
   document.getElementById('sheet-source').value='';
   document.getElementById('sheet-note').value='';
-  document.getElementById('sheet-date').value=new Date().toISOString().slice(0,10);
+  state.sheetSelectedJalaliDay = null;
+  state.sheetDate = new Date().toISOString().slice(0,10);
+  updateDateLabel();
   document.getElementById('sheet-type-toggle').style.display=presetCategory?'none':'flex';
   renderSheetTypeUI();
   document.getElementById('add-sheet').classList.add('show');
@@ -718,11 +733,77 @@ function onAmountInput(){
   const btn=document.getElementById('sheet-submit');
   btn.classList.toggle('ready', amt>0);
 }
+function jalaliToGregorian(jy, jm, jd){
+  let gy;
+  if(jy > 979){ gy = 1600; jy -= 979; } else { gy = 621; }
+  let days = (365*jy) + (Math.floor(jy/33)*8) + Math.floor(((jy%33)+3)/4) + 78 + jd + ((jm<7) ? (jm-1)*31 : ((jm-7)*30)+186);
+  gy += 400 * Math.floor(days/146097);
+  days %= 146097;
+  if(days > 36524){
+    gy += 100 * Math.floor((days-1)/36524);
+    days = (days-1) % 36524;
+    if(days >= 365) days++;
+  }
+  gy += 4 * Math.floor(days/1461);
+  days %= 1461;
+  if(days > 365){
+    gy += Math.floor((days-1)/365);
+    days = (days-1) % 365;
+  }
+  let gd = days + 1;
+  const isLeap = (gy%4===0 && gy%100!==0) || (gy%400===0);
+  const monthDays = [0,31, isLeap?29:28, 31,30,31,30,31,31,30,31,30,31];
+  let gm = 1;
+  while(gm<=12 && gd > monthDays[gm]){ gd -= monthDays[gm]; gm++; }
+  return { gy, gm, gd };
+}
+
+function todayJalali(){ return persianYMD(new Date()); }
+function persianYMD(date){
+  const p=persianParts(date);
+  return { jy:Number(p.year), jm:Number(p.month), jd:Number(p.day) };
+}
+
+function openCalendarModal(){
+  const { jy, jm, jd } = todayJalali();
+  const monthNames=['فروردین','اردیبهشت','خرداد','تیر','مرداد','شهریور','مهر','آبان','آذر','دی','بهمن','اسفند'];
+  document.getElementById('calendar-month-title').textContent = monthNames[jm-1] + ' ' + jy.toLocaleString('fa-IR');
+  const grid=document.getElementById('calendar-grid');
+  let html='';
+  const selJalali = state.sheetSelectedJalaliDay || jd;
+  for(let d=1; d<=jd; d++){
+    const isToday = d===jd;
+    const isSel = d===selJalali;
+    html += `<button type="button" onclick="pickCalendarDay(${d})" style="padding:10px 0; border-radius:10px; font-size:13px; border:1px solid ${isSel?CYAN:'var(--border)'}; background:${isSel?CYAN+'22':'rgba(255,255,255,0.04)'}; color:${isSel?CYAN:'var(--text)'};">
+      ${d.toLocaleString('fa-IR')}${isToday?'<div style="font-size:9px;color:var(--muted);margin-top:2px;">امروز</div>':''}
+    </button>`;
+  }
+  grid.innerHTML = html;
+  document.getElementById('calendar-modal').classList.add('show');
+}
+function closeCalendarModal(){ document.getElementById('calendar-modal').classList.remove('show'); }
+function pickCalendarDay(day){
+  const { jy, jm } = todayJalali();
+  state.sheetSelectedJalaliDay = day;
+  const { gy, gm, gd } = jalaliToGregorian(jy, jm, day);
+  const iso = `${gy}-${String(gm).padStart(2,'0')}-${String(gd).padStart(2,'0')}`;
+  state.sheetDate = iso;
+  updateDateLabel();
+  closeCalendarModal();
+}
+function updateDateLabel(){
+  const { jd:todayJd } = todayJalali();
+  const selJd = state.sheetSelectedJalaliDay || todayJd;
+  const label = document.getElementById('date-label');
+  if(!label) return;
+  label.textContent = (selJd===todayJd ? 'امروز، ' : '') + dayLabelOf(state.sheetDate);
+}
+
 function closeSheet(){ document.getElementById('add-sheet').classList.remove('show'); }
 async function submitTransaction(){
   const amount=cleanNum(document.getElementById('sheet-amount').value)*1000;
   if(!amount) return;
-  const dateVal=document.getElementById('sheet-date').value||new Date().toISOString().slice(0,10);
+  const dateVal=state.sheetDate||new Date().toISOString().slice(0,10);
   const tx={
     month_key: state.monthKey,
     type:state.sheetType, amount,
