@@ -10,7 +10,7 @@ flutter analyze --no-pub
 flutter test
 ```
 
-بخش `backend/` شامل Worker و تست‌های API است. برای بررسی آن، در همان پوشه `npm test` و `npm run check` را اجرا کنید.
+کد Worker و تست‌های API در پروژهٔ محلی اصلی نگهداری می‌شوند و در این مخزن عمومی قرار ندارند.
 
 ## ساخت وب
 
@@ -20,14 +20,6 @@ flutter test
 flutter build web --release --dart-define=API_BASE_URL=https://money-tracker.parhamharouni9.workers.dev
 ```
 
-خروجی در `build/web/` است. فایل `backend/wrangler.production.jsonc` این پوشه را به عنوان assets همان Worker معرفی می‌کند. قبل از انتشار، آدرس API و تنظیمات Worker را با محیط مقصد بررسی کنید. GitHub Pages این مخزن صرفاً به سایت اصلی هدایت می‌شود.
+خروجی در `build/web/` است. تنظیمات Worker در پروژهٔ اصلی این خروجی را به‌عنوان فایل‌های وب همان دامنه منتشر می‌کند. GitHub Pages این مخزن به سایت اصلی هدایت می‌شود.
 
-برای اجرای محلی با Worker:
-
-```sh
-flutter build web --debug --dart-define=API_BASE_URL=http://127.0.0.1:8787
-cd backend
-npx wrangler dev --config wrangler.jsonc --port 8787 --local
-```
-
-سپس `http://127.0.0.1:8787/` را باز کنید. دادهٔ D1 در این حالت محلی است.
+برای اجرای محلی همراه Worker، API و وب باید روی یک دامنه اجرا شوند تا نشست مرورگر کار کند.
