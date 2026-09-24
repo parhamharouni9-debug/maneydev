@@ -1,0 +1,11 @@
+{
+  "month_key": "1405-01",
+  "type": "expense",
+  "amount": 125000,
+  "category": "food",
+  "source": null,
+  "note": "ناهار",
+  "date": "2026-03-21",
+  "recurring": false,
+  "recurring_source": null
+}
