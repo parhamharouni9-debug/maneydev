@@ -53,20 +53,19 @@ class Palette {
     required this.categoryPalette,
   });
 
-  // PoolMan approved reference design — dark: warm, premium, soft.
-  // Exact hex values from the design brief (not reinterpreted).
+  // Warm neutral surfaces keep the financial figures in focus.
   static const dark = Palette(
-    bg: Color(0xFF0F1115),
-    bgGlow: Color(0xFF1A1D22),
-    cardBg: Color(0xFF1A1D22),
-    cardBgAlt: Color(0xFF2A2F36),
-    text: Color(0xFFF1F5F9),
-    muted: Color(0xFF8B93A0),
-    primary: Color(0xFFFF6B35),
+    bg: Color(0xFF101216),
+    bgGlow: Color(0xFF24202A),
+    cardBg: Color(0xFF1B1E23),
+    cardBgAlt: Color(0xFF292D35),
+    text: Color(0xFFF5F2EE),
+    muted: Color(0xFFA9B0BC),
+    primary: Color(0xFFFF7848),
     secondary: Color(0xFFEF4444),
     success: Color(0xFF22C55E),
     warning: Color(0xFFF5B93D),
-    divider: Color(0x1FF1F5F9),
+    divider: Color(0x2AF5F2EE),
     categoryPalette: [
       Color(0xFFFF6B35),
       Color(0xFFEF4444),
@@ -87,19 +86,19 @@ class Palette {
     ],
   );
 
-  // PoolMan approved reference design — light: warm/soft, never pure white.
+  // The light palette uses the same hierarchy with readable dark text.
   static const light = Palette(
-    bg: Color(0xFFF5F2EE),
-    bgGlow: Color(0xFFEDE8E2),
-    cardBg: Color(0xFFEDE8E2),
-    cardBgAlt: Color(0xFFDAD6CF),
-    text: Color(0xFF334155),
-    muted: Color(0xFF6B7280),
-    primary: Color(0xFFFF6B35),
+    bg: Color(0xFFF7F4F0),
+    bgGlow: Color(0xFFF1E8E0),
+    cardBg: Color(0xFFFFFFFF),
+    cardBgAlt: Color(0xFFECE8E3),
+    text: Color(0xFF202833),
+    muted: Color(0xFF5F6874),
+    primary: Color(0xFFB94720),
     secondary: Color(0xFFDC2626),
     success: Color(0xFF16A34A),
     warning: Color(0xFFB9740A),
-    divider: Color(0x14334155),
+    divider: Color(0x24202833),
     categoryPalette: [
       Color(0xFFFF6B35),
       Color(0xFFDC2626),
@@ -210,7 +209,7 @@ class AppTheme {
         color: p.cardBg,
         elevation: 0,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(18),
+          borderRadius: BorderRadius.circular(22),
           side: BorderSide(color: p.primary.withValues(alpha: 0.08)),
         ),
       ),
@@ -218,15 +217,15 @@ class AppTheme {
         filled: true,
         fillColor: p.cardBg,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(16),
           borderSide: BorderSide(color: p.primary.withValues(alpha: 0.18)),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(16),
           borderSide: BorderSide(color: p.primary.withValues(alpha: 0.18)),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(16),
           borderSide: BorderSide(color: p.primary, width: 1.4),
         ),
         labelStyle: TextStyle(color: p.muted),
@@ -242,7 +241,7 @@ class AppTheme {
           textStyle: GoogleFonts.vazirmatn(
               fontSize: 15.5, fontWeight: FontWeight.w700),
           shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
           padding: const EdgeInsets.symmetric(vertical: 18),
           minimumSize: const Size.fromHeight(52),
         ),

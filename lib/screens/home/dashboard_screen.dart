@@ -76,39 +76,47 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       ? Center(
                           child: CircularProgressIndicator(
                               color: AppColors.primary))
-                      : ListView(
-                          padding: const EdgeInsets.fromLTRB(18, 6, 18, 24),
-                          children: [
-                            _monthNav(),
-                            const SizedBox(height: 10),
-                            _balanceCard(),
-                            const SizedBox(height: 10),
-                            _incomeExpenseRow(),
-                            const SizedBox(height: 10),
-                            _dailyAllowanceCard(),
-                            if (_app.transactions.isNotEmpty) ...[
-                              const SizedBox(height: 20),
-                              _sectionHeader('آخرین تراکنش‌ها',
-                                  onSeeAll: () => Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                            builder: (_) =>
-                                                const TransactionsScreen()),
-                                      )),
-                              const SizedBox(height: 10),
-                              ..._recentTransactions().map(_transactionRow),
-                            ],
-                            if (_app.goal != null) ...[
-                              const SizedBox(height: 14),
-                              _sectionHeader('هدف این ماه',
-                                  onSeeAll: () => Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                            builder: (_) =>
-                                                const GoalsScreen()),
-                                      )),
-                              const SizedBox(height: 8),
-                              _goalRow(),
-                            ],
-                          ],
+                      : Align(
+                          alignment: Alignment.topCenter,
+                          child: ConstrainedBox(
+                            constraints: const BoxConstraints(maxWidth: 760),
+                            child: ListView(
+                              padding: const EdgeInsets.fromLTRB(18, 6, 18, 24),
+                              children: [
+                                _monthNav(),
+                                const SizedBox(height: 10),
+                                _balanceCard(),
+                                const SizedBox(height: 10),
+                                _incomeExpenseRow(),
+                                const SizedBox(height: 10),
+                                _dailyAllowanceCard(),
+                                if (_app.transactions.isNotEmpty) ...[
+                                  const SizedBox(height: 20),
+                                  _sectionHeader('آخرین تراکنش‌ها',
+                                      onSeeAll: () =>
+                                          Navigator.of(context).push(
+                                            MaterialPageRoute(
+                                                builder: (_) =>
+                                                    const TransactionsScreen()),
+                                          )),
+                                  const SizedBox(height: 10),
+                                  ..._recentTransactions().map(_transactionRow),
+                                ],
+                                if (_app.goal != null) ...[
+                                  const SizedBox(height: 14),
+                                  _sectionHeader('هدف این ماه',
+                                      onSeeAll: () =>
+                                          Navigator.of(context).push(
+                                            MaterialPageRoute(
+                                                builder: (_) =>
+                                                    const GoalsScreen()),
+                                          )),
+                                  const SizedBox(height: 8),
+                                  _goalRow(),
+                                ],
+                              ],
+                            ),
+                          ),
                         ),
                 ),
               ),

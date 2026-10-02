@@ -3,7 +3,7 @@ import 'package:rive/rive.dart';
 
 /// Interactive Rive bear for the Login/Register screens.
 ///
-/// Wired to the real State Machine found in assets/animations/bear.riv:
+/// Wired to the real State Machine found in assets/animations/bear_transparent.riv:
 ///   State Machine: "State Machine 1"
 ///   Inputs: Check (bool), Look (number), hands_up (bool),
 ///            success (trigger), fail (trigger)
@@ -35,7 +35,7 @@ class BearMascot extends StatefulWidget {
 
 class BearMascotState extends State<BearMascot> {
   late final FileLoader _fileLoader = FileLoader.fromAsset(
-    'assets/animations/bear.riv',
+    'assets/animations/bear_transparent.riv',
     riveFactory: Factory.rive,
   );
   BooleanInput? _checkInput;
