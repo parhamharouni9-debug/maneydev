@@ -6,6 +6,7 @@ import '../../widgets/auth_background.dart';
 import '../../widgets/glass_card.dart';
 import '../../widgets/glass_text_field.dart';
 import '../../widgets/bear_mascot.dart';
+import '../../widgets/auth_mascot_stage.dart';
 import '../../widgets/theme_rebuilder.dart';
 import '../home/app_entry_screen.dart';
 import 'register_screen.dart';
@@ -88,16 +89,17 @@ class _LoginScreenState extends State<LoginScreen> {
                                 style: TextStyle(
                                     color: AppColors.muted, fontSize: 13.5)),
                             const SizedBox(height: 12),
-                            Center(
-                              child: widget.mascotOverride ??
+                            AuthMascotStage(
+                              mascot: widget.mascotOverride ??
                                   BearMascot(
                                     key: _bearKey,
                                     checking: _emailFocused,
                                     lookX: _emailFocused ? 0.4 : 0,
                                     coverEyes: _passwordFocused,
+                                    size: 240,
                                   ),
                             ),
-                            const SizedBox(height: 10),
+                            const SizedBox(height: 4),
                             GlassTextField(
                               controller: _email,
                               label: 'ایمیل',
